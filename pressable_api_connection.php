@@ -26,20 +26,16 @@ function pressable_api_toplevel_menu() {
 add_action( 'admin_menu', 'pressable_api_toplevel_menu' );
 
 
-
-
-
-
 function pressable_api_display_settings_page() {
 
 // display the plugin settings page
-	
+
 
 	?>
 
 	<div class="wrap">
 		<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-		
+
 	</div>
 
 <?php
@@ -51,10 +47,21 @@ $pressable_api_request_headers = array(
 	//Add your Bearer Token
    'Authorization' => 'Bearer ' . ( 'Add-Your-Bearer-Token-Here' )
 );
+
 //Pressable API request URL example: https://my.pressable.com/v1/sites
-$pressable_api_request_url = 'Add-Request-URL-Here';
- 
-//iitiating connection to the API using WordPress request function 
+$pressable_api_request_url = 'https://my.pressable.com/v1/sites';
+
+//Initiating connection to the API using WordPress request function
+$pressable_api_response_get_request = wp_remote_request(
+    $pressable_api_request_url,
+    array(
+    	//You can change the API method to suit your needs
+        'method'    => 'GET',
+        'headers'   => $pressable_api_request_headers
+    )
+);
+
+//iitiating connection to the API using WordPress request function
 $pressable_api_response_post_request = wp_remote_request(
     $pressable_api_request_url,
     array(
@@ -63,8 +70,9 @@ $pressable_api_response_post_request = wp_remote_request(
         'headers'   => $pressable_api_request_headers
     )
 );
+
 //Display request using API code
-echo '<strong>Connection status code -</strong> ' . wp_remote_retrieve_response_code( $pressable_api_response_post_request ) . ' ' . wp_remote_retrieve_response_message( $pressable_api_response_post_request );
-
-
+echo '<strong>Connection status code -</strong> ' . wp_remote_retrieve_response_code( $pressable_api_response_get_request ) . ' ' . wp_remote_retrieve_response_message( $pressable_api_response_get_request );
+echo '<strong>Response Body</strong>';
+echo wp_remote_retrieve_body( $pressable_api_response_get_request );
 }
