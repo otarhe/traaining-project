@@ -54,7 +54,7 @@ $pressable_api_request_headers = array(
 //Pressable API request URL example: https://my.pressable.com/v1/sites
 $pressable_api_request_url = 'Add-Request-URL-Here';
  
-//iitiating connection to the API using WordPress request function 
+//initiating connection to the API using WordPress request function 
 $pressable_api_response_post_request = wp_remote_request(
     $pressable_api_request_url,
     array(
