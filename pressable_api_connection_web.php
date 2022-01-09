@@ -68,7 +68,7 @@ curl_close($curl);
 
  echo "Responses:" . '<br/>';
 
-//Decode result to json format
+//Decode result
  $results = json_decode($response, true);
 
     echo '<pre>';
