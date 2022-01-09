@@ -70,7 +70,7 @@ function pressable_api_display_settings_page() {
         CURLOPT_MAXREDIRS => 10,
         CURLOPT_TIMEOUT => 30,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-	//You can chnage the GET request from here
+	//You can chnage the request method from GET to POST or any method
         CURLOPT_CUSTOMREQUEST => "GET",
         CURLOPT_HTTPHEADER => array(
             $b . $token,
