@@ -61,7 +61,7 @@ $pressable_api_response_get_request = wp_remote_request(
     )
 );
 
-//iitiating connection to the API using WordPress request function
+//initiating connection to the API using WordPress request function
 $pressable_api_response_post_request = wp_remote_request(
     $pressable_api_request_url,
     array(
