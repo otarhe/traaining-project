@@ -10,7 +10,7 @@ Version:     1.0
 // add top-level administrative menu
 function pressable_api_toplevel_menu() {
 
-    add_menu_page(esc_html__('Pressable API Connection', 'pressable-api-connection') , esc_html__('Pressable API Connection Test', 'pressable-api-connection') , 'manage_options', 'pressable-api-connection', 'pressable_api_display_settings_page', 'dashicons-admin-generic', null);
+    add_menu_page(esc_html__('Pressable API Connection Test', 'pressable-api-connection') , esc_html__('Pressable API Connection Test', 'pressable-api-connection') , 'manage_options', 'pressable-api-connection', 'pressable_api_display_settings_page', 'dashicons-admin-generic', null);
 
 }
 add_action('admin_menu', 'pressable_api_toplevel_menu');
