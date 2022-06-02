@@ -1,94 +1,159 @@
 <?php
 /*
-Plugin Name: Pressable API connection
+Plugin Name: Query Pressable API
 Description: Demonstrating how to access the Pressable API using a simple WordPress plugin
 Plugin URI:  https://pressable.com/
 Author:      Obatarhe Otughwor
 Version:     1.0
 */
 
-// add top-level administrative menu
-function pressable_api_toplevel_menu() {
+// If this file is access directly, abort!!!
+defined('ABSPATH') or die('Unauthorized Access');
 
-    add_menu_page(esc_html__('Pressable API Connection Test', 'pressable-api-connection') , esc_html__('Pressable API Connection Test', 'pressable-api-connection') , 'manage_options', 'pressable-api-connection', 'pressable_api_display_settings_page', 'dashicons-admin-generic', null);
+session_start();
 
-}
-add_action('admin_menu', 'pressable_api_toplevel_menu');
+function pressable_api_get_send_data()
+{
 
-function pressable_api_display_settings_page() {
+    //Check if the access token has expired else generate a new one
+    if (time() < $_SESSION['access_token_expiry'])
+    {
 
-    // display the plugin settings page
-    
+        $token = get_transient('access_token');
+        $b = 'Authorization: Bearer ';
 
-    
-?>
+        $curl = curl_init();
 
-	<div class="wrap">
-		<h1><?php echo esc_html(get_admin_page_title()); ?></h1>
-		
-	</div>
+        curl_setopt_array($curl, array(
+            //Pressable API request URL example: https://my.pressable.com/v1/sites
+            CURLOPT_URL => "https://my.pressable.com/v1/sites/",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            //You can chnage the request method from GET to POST or any method
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => array(
+                $b . $token,
+                "cache-control: no-cache"
+            ) ,
+        ));
 
-<?php
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
 
-    $curl = curl_init();
-    $auth_data = array(
-        'client_id' => 'ADD-CLIENT-ID-HERE',
-        'client_secret' => 'ADD-CLIENT-SECRET-HERE',
-        'grant_type' => 'client_credentials'
-    );
-    curl_setopt($curl, CURLOPT_POST, 1);
-    curl_setopt($curl, CURLOPT_POSTFIELDS, $auth_data);
-    curl_setopt($curl, CURLOPT_URL, 'https://my.pressable.com/auth/token');
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-    $results = curl_exec($curl);
-    if (!$results) {
-        die("Connection Failure");
+        curl_close($curl);
+
+        echo '<br/>';
+        echo '<br/>';
+
+        echo "<h1>Cached Generated Bearer Token:</h1>" . '<br/>';
+        print_r(get_transient('access_token'));
+
+        echo "<h2> Responses:</h2>" . '<br/>';
+
+        //Decode result
+        $results = json_decode($response, true);
+
+        echo '<pre>';
+        print_r($results);
+
+        return false;
+
     }
-    curl_close($curl);
+    else
+    {
 
-    $results = json_decode($results, true);
+        // Generate access token
+        $curl = curl_init();
+        $auth_data = array(
+            'client_id' => 'oacH6sF7uT5IyawmyJlGgeq3cBK1FXv-wYybtVxyI8s',
+            'client_secret' => '39mgAwF2tu6LWbhjEYIWMDxyiQzoqUjV7ZTTqE_JIBw',
+            'grant_type' => 'client_credentials'
+        );
+        curl_setopt($curl, CURLOPT_POST, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $auth_data);
+        curl_setopt($curl, CURLOPT_URL, 'https://my.pressable.com/auth/token');
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        $results = curl_exec($curl);
+        if (!$results)
+        {
+            die("Connection Failure");
+        }
+        curl_close($curl);
 
-    echo "Bearer token:" . '<br/>';
-    $res = print_r($results["access_token"]);
+        $results = json_decode($results, true);
 
-    echo $res;
-    echo " </br>";
-    echo " </br>";
-    echo " </br>";
+        echo "<h1>Generated Bearer Token:</h1>" . '<br/>';
+        $access_token = print_r($results["access_token"]);
 
-    $token = $results["access_token"];
-    $b = 'Authorization: Bearer ';
+        // Use session to save the access token
+        $_SESSION['access_token_expiry'] = time() + $results['expires_in'];
+        // Cache the generated access token using transient to reduce uncessary api calls
+        set_transient('access_token', $results['access_token'], $results['expires_in']);
 
-    $curl = curl_init();
+        // $token = $results["access_token"];
+        $token = get_transient('access_token');
+        $b = 'Authorization: Bearer ';
 
-    curl_setopt_array($curl, array(
-	//Pressable API request URL example: https://my.pressable.com/v1/sites
-        CURLOPT_URL => "https://my.pressable.com/v1/sites/",
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => "",
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 30,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-	//You can chnage the request method from GET to POST or any method
-        CURLOPT_CUSTOMREQUEST => "GET",
-        CURLOPT_HTTPHEADER => array(
-            $b . $token,
-            "cache-control: no-cache"
-        ) ,
-    ));
+        $curl = curl_init();
 
-    $response = curl_exec($curl);
-    $err = curl_error($curl);
+        curl_setopt_array($curl, array(
+            //Pressable API request URL example: https://my.pressable.com/v1/sites
+            CURLOPT_URL => "https://my.pressable.com/v1/sites/",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            //You can chnage the request method from GET to POST or any method
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => array(
+                $b . $token,
+                "cache-control: no-cache"
+            ) ,
+        ));
 
-    curl_close($curl);
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
 
-    echo "Responses:" . '<br/>';
+        curl_close($curl);
 
-    //Decode result
-    $results = json_decode($response, true);
+        echo '<br/>';
+        echo '<br/>';
 
-    echo '<pre>';
-    print_r($results);
+        echo "<h2>Responses:</h2>" . '<br/>';
 
+        //Decode result
+        $results = json_decode($response, true);
+
+        echo '<pre>';
+        print_r($results);
+
+        set_transient('pressable-api-reseponse', $results['pressable-api-reseponse'], $results['expires_in']);
+
+        // if ( is_wp_error( $response ) ) {
+        // 		$error_message = $response->get_error_message();
+        // 		return "Something went wrong accessing the api: $error_message";
+        // 	} else {
+        // 		echo '<pre>';
+        // 		var_dump( wp_remote_retrieve_body( $response ) );
+        // 		echo '</pre>';
+        // 	}
+        
+    }
 }
+
+// session_destroy();
+
+/**
+ * Register a custom menu page to view the information queried.
+ */
+function pressable_api_register_my_custom_menu_page()
+{
+    add_menu_page(__('Query Pressable API', 'query-apis') , 'Query Pressable API', 'manage_options', 'api-test.php', 'pressable_api_get_send_data', 'dashicons-testimonial', 16);
+}
+
+add_action('admin_menu', 'pressable_api_register_my_custom_menu_page');
