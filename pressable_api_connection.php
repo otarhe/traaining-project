@@ -68,8 +68,8 @@ function pressable_api_get_send_data()
         // Generate access token
         $curl = curl_init();
         $auth_data = array(
-            'client_id' => 'oacH6sF7uT5IyawmyJlGgeq3cBK1FXv-wYybtVxyI8s',
-            'client_secret' => '39mgAwF2tu6LWbhjEYIWMDxyiQzoqUjV7ZTTqE_JIBw',
+            'client_id' => 'ADD-YOUR-CLIENT-ID-HERE',
+            'client_secret' => 'ADD-YOUR-CLIENT-SECRECT-HERE',
             'grant_type' => 'client_credentials'
         );
         curl_setopt($curl, CURLOPT_POST, 1);
