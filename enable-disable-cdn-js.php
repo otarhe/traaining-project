@@ -22,14 +22,16 @@
 
 <script type="text/javascript">
 	
-const btn= document.getElementById("btn");
+// const btn= document.getElementById("btn");
 
-btn.addEventListener('click', function(){
-  var name = document.getElementById("client_id").value;
-  alert("Name: "+ name);
-});
+// btn.addEventListener('click', function(){
+//   var name = document.getElementById("client_id").value;
+//   alert("Name: "+ name);
+// });
 
- function enableCDN() {
+
+//Function to enable CDN 
+function enableCDN() {
 
 fetch('https://my.pressable.com/v1/sites/ADD-SITE-ID-HERE/cdn', {
   method: 'POST',
@@ -51,7 +53,7 @@ fetch('https://my.pressable.com/v1/sites/ADD-SITE-ID-HERE/cdn', {
 
 
 
-
+//Function to disable CDN
 function disableCDN() {
 
 fetch('https://my.pressable.com/v1/sites/ADD-SITE-ID-HERE/cdn', {
